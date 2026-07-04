@@ -8,10 +8,12 @@ import RegistrationPage from "./components/Pages/RegistrationPage";
 import LoginPage from "./components/Pages/LoginPage";
 import JobSearch from "./components/Pages/JobSearch";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <div className="font-Google">
+      <Toaster position="top-right" reverseOrder={false} />
       <Navbar />
       <BrowserRouter>
         <Routes>
