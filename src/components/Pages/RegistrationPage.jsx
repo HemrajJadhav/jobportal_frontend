@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import il1 from "../../assets/whiteBody.png";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const RegistrationPage = () => {
   const [email, setEmail] = useState("");
@@ -36,12 +38,12 @@ const RegistrationPage = () => {
     if (!password) {
       newErrors.password = "Password is required.";
       isValid = false;
-    } else if (!passwordRegex.test(password)) {
-      newErrors.password =
-        "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.";
-      isValid = false;
     }
-
+    // else if (!passwordRegex.test(password)) {
+    //       newErrors.password =
+    //         "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.";
+    //       isValid = false;
+    //     }
     //phone check
     const phoneRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/;
 
@@ -63,6 +65,40 @@ const RegistrationPage = () => {
     return isValid;
   };
 
+  const handleRegister = async () => {
+    // e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8088/api/auth/register",
+        {
+          username: name,
+          email: email,
+          mobileNumber: phone,
+          password: password,
+        },
+      );
+      console.log(response.data);
+      toast.success("Registration successful");
+    } catch (e) {
+      console.log("MyError:" + e);
+      if (e.response && e.response.data) {
+        console.log("Backend error payload: ", e.response.data);
+
+        const errorMessage = e.response.data.message || "Registration failed";
+
+        toast.error(errorMessage);
+      } else if (e.request) {
+        toast.error("No response from server. Please try again.");
+      } else {
+        toast.error("An unexpected error occured: " + e.message);
+      }
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -70,6 +106,8 @@ const RegistrationPage = () => {
       console.log("Form submitted successfully!", { email, password });
       // Proceed with your API call here
     }
+
+    handleRegister();
   };
 
   return (
